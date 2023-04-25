@@ -1,0 +1,5 @@
+PyMOL>fetch 5ji1
+PyMOL>mset 1, 180
+PyMOL>util.mroll 1, 180, 1
+PyMOL>set ray_trace_frames, 1
+PyMOL>set cache_frames, 0
