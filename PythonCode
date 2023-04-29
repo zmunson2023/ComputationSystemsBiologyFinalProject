@@ -1,0 +1,47 @@
+# Imports
+import numpy as np
+from scipy.integrate import solve_ivp
+import matplotlib.pyplot as plt
+
+# Rosenfield et. al. model
+def NA_dynamics(t,y,beta_2,k,n,tau,tau_deg):    
+    #y = protein (only one dynamic variable so we don't need a vector fo y's)
+    
+    alpha = np.log(2)*(1/tau+1/tau_deg)
+    A = beta_2/(1+y**n/k**n)
+    dydt = A - alpha*y
+    
+    return dydt
+
+# Parameters
+tau = 1# [1/time]
+tau_deg = 1000 # [1/time] start with a high number to assume no degradation
+k = 1
+n = 1
+alpha = np.log(2)*(1/tau+1/tau_deg)
+beta_2 = 1598 # [conc/time]
+
+# Initial Conditions
+y0 = [0]
+# time span
+t = np.linspace(0,10,1000)
+tspan = [t[0],t[-1]]
+
+# Solver
+ode_sol = solve_ivp(lambda t,y:NA_dynamics(t,y,beta_2,k,n,tau,tau_deg),tspan,y0,t_eval=t)
+
+# Steady State Values
+x_st_dmd = 47.5
+x_st_gen_low = 26.7
+x_st_gen_high = 32.7
+
+# Plot for Patient with DMD with normal reference values
+[fig,axs] = plt.subplots(1,1,figsize=[5,5])
+
+axs.plot(t,ode_sol.y[0],'k-')
+axs.set_xlabel('Time')
+axs.set_ylabel('Protein Concentration (ng/mL)')
+axs.plot([t[0],t[-1]],[x_st_dmd,x_st_dmd],'b:')
+axs.plot([t[0],t[-1]],[x_st_gen_low,x_st_gen_low],'g:')
+axs.plot([t[0],t[-1]],[x_st_gen_high,x_st_gen_high],'g:')
+axs.legend(['Protein','Steady-State (DMD)','Steady-State Low (Gen Pop)','Steady-State High (Gen Pop)']);
